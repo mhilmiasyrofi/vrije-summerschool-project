@@ -1,0 +1,74 @@
+library(quanteda)
+
+
+######## dictionary ########
+dict = quanteda::data_dictionary_LSD2015
+
+head(dict$positive)
+head(dict$negative)
+
+m = dfm(data_corpus_inaugural, dictionary = dict)
+m
+head(as.matrix(m))
+
+
+d = cbind(docvars(m), 
+          positive = as.numeric(m[,1]),
+          negative = as.numeric(m[,2]))
+head(d)
+
+
+d$sentiment = log(d$positive + 0.5) - log(d$negative + 0.5)
+head(d)
+
+plot(d$Year, d$sentiment, type='l')
+
+
+
+
+####### supervised #########
+m <- dfm(data_corpus_inaugural, stem = TRUE, remove = stopwords("english"),  
+         remove_punct = TRUE)
+
+set.seed(1) 
+# create a document variable indicating pre or post war 
+docvars(m, "is_prewar") <- docvars(m, "Year") < 1945 
+docvars(m)
+
+# sample 40 documents for the training set and use remaining (18) for testing 
+train_dtm <- dfm_sample(m, size = 40)
+test_dtm <- m[setdiff(docnames(m), docnames(train_dtm)), ] 
+
+# fit a Naive Bayes multinomial model and use it to predict the test data 
+nb_model <- textmodel_nb(train_dtm, y = docvars(train_dtm, "is_prewar")) 
+pred_nb <- predict(nb_model, newdata = test_dtm)
+
+# compare prediction (rows) and actual is_prewar value (columns) in a table 
+table(prediction = pred_nb, is_prewar = docvars(test_dtm, "is_prewar"))
+
+
+## P&R
+tab = table(prediction = pred_nb$nb.predicted, is_prewar = docvars(test_dtm, "is_prewar"))
+precision = tab[2,2] / sum(tab[2,])
+recall    = tab[2,2] / sum(tab[,2])
+F1 =  2 * (precision * recall) / (precision + recall)
+
+precision
+recall
+F1
+
+
+
+######### unsupervised ###########
+library(topicmodels) 
+
+texts = corpus_reshape(data_corpus_inaugural, to = "paragraphs")
+
+par_dtm <- dfm(texts, stem = TRUE,              # create a document-term matrix
+               remove_punct = TRUE, remove = stopwords("english"))
+par_dtm <- dfm_trim(par_dtm, min_count = 5)     # remove rare terms
+par_dtm <- convert(par_dtm, to = "topicmodels") # convert to topicmodels format
+
+set.seed(1)
+lda_model <- topicmodels::LDA(par_dtm, method = "Gibbs", k = 5) 
+terms(lda_model, 5)

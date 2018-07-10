@@ -1,0 +1,24 @@
+
+######## character encoding ##########
+x = '"Hello Michaël"'
+x
+Encoding(x)
+
+Encoding(x) = 'latin1'
+x
+
+Encoding(x) = 'bytes'
+x
+
+Encoding(x) = 'UTF-8'
+x
+
+
+
+x <- "fa\xE7ile"
+Encoding(x)
+x
+
+Encoding(x) <- "latin1"
+x
+

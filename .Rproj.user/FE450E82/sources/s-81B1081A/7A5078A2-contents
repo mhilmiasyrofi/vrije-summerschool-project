@@ -1,0 +1,44 @@
+library(nlpiper)
+options(nlpiper.token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2ZXJzaW9uIjoxLCJpYXQiOjE1Mjg5NjcxMTF9.LTUgVH3oJhf1GN795d5ewa5yIh1DGq7H5pIBTQeybA4")
+options(nlpiper.server="http://nlpipe.kasperwelbers.com")
+
+
+tokens_en = nlpiper::process("corenlp_parse", format = 'csv', 
+                             text = "I'm still not over how much the Facebook API sucks now.")
+tokens_en
+
+
+
+
+
+library(quanteda)
+
+text = c('Socrates is human',
+         'Humans are mortal',
+         'Therefore, Socrates is mortal')
+
+dfm(text)
+dfm(text, stem = T)
+dfm(text, stem = T, remove = stopwords('en'), remove_punct=T)
+dfm(text, ngrams=2)
+
+m = dfm(text, stem = T, remove = stopwords('en'), remove_punct=T)
+dfm_tfidf(m)
+
+m = dfm(data_corpus_inaugural, remove = stopwords('en'), remove_punct=T)
+textplot_wordcloud(m, min_count = 100)
+
+
+
+## dimensionality reduction
+m = dfm(data_corpus_inaugural, stem=T, remove = stopwords('en'), remove_punct=T)
+
+library(topicmodels)
+topmod = topicmodels::LDA(m, k = 10, method = 'Gibbs')
+post = posterior(topmod)
+post$topics
+
+library(igraph)
+g = graph.adjacency(cor(t(post$topics)), weighted = T)
+g = delete.edges(g, which(E(g)$weight < 0.8))
+plot(g)

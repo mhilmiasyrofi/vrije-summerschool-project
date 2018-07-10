@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1531144704335.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2747392964",
+    "id" : "13603BC",
+    "lastKnownWriteTime" : 1531145156,
+    "last_content_update" : 1531145156707,
+    "path" : "~/Documents/SummerSchoolProject/Learn.R",
+    "project_path" : "Learn.R",
+    "properties" : {
+        "cursorPosition" : "22,0",
+        "scrollLine" : "1",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
